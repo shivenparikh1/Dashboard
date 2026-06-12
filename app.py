@@ -19,7 +19,7 @@ from src.data_loader import load_event_files
 
 
 APP_TITLE = "Automotive Supply Chain Risk Intelligence Control Tower"
-APP_BUILD = "2026.06.12.5"
+APP_BUILD = "2026.06.12.6"
 DATA_PATHS = [
     Path(__file__).parent / "data" / "real_events.csv",
     Path(__file__).parent / "data" / "simulated_events.csv",
