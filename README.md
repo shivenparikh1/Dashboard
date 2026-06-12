@@ -146,7 +146,8 @@ back to the five original ratings. More detail is available in
 
 ## Run the Dashboard
 
-Python 3.9 or later is recommended.
+Python 3.9 or later is supported. For Streamlit Community Cloud, select Python
+3.12 in Advanced settings to match the platform default used for deployment.
 
 ```bash
 python3 -m venv .venv
@@ -157,6 +158,10 @@ streamlit run app.py
 
 Open the local address shown by Streamlit, usually
 `http://localhost:8501`.
+
+When deploying to Streamlit Community Cloud, set the repository to
+`shivenparikh1/Dashboard`, the branch to `main`, and the entrypoint to `app.py`.
+The root `requirements.txt` contains all runtime packages, including Plotly.
 
 ## Run the Tests
 
