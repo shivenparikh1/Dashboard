@@ -152,7 +152,7 @@ Python 3.9 or later is supported. For Streamlit Community Cloud, select Python
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 streamlit run app.py
 ```
 
@@ -161,7 +161,8 @@ Open the local address shown by Streamlit, usually
 
 When deploying to Streamlit Community Cloud, set the repository to
 `shivenparikh1/Dashboard`, the branch to `main`, and the entrypoint to `app.py`.
-The root `requirements.txt` contains all runtime packages, including Plotly.
+The root `requirements.txt` selects compatible package versions for both the
+Cloud Python 3.14 runtime and local Python 3.9 environments.
 
 ## Run the Tests
 

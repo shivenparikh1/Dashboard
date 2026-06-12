@@ -17,7 +17,7 @@ from src.data_loader import load_events
 
 
 APP_TITLE = "Automotive Supply Chain Risk Intelligence Control Tower"
-APP_BUILD = "2026.06.12.1"
+APP_BUILD = "2026.06.12.2"
 DATA_PATH = Path(__file__).parent / "data" / "mock_events.csv"
 RISK_LEVELS = ["Critical", "High", "Medium", "Low"]
 
