@@ -6,6 +6,7 @@ from typing import List
 
 import pandas as pd
 import streamlit as st
+from packaging.version import Version
 
 from src.charts import (
     component_exposure_chart,
@@ -30,6 +31,11 @@ DISCLAIMER = (
     "Real events are manually reviewed and scored using a simplified risk model. "
     "The dashboard is for learning and portfolio demonstration, not enterprise "
     "decision-making."
+)
+STRETCH_WIDTH = (
+    {"width": "stretch"}
+    if Version(st.__version__) >= Version("1.58.0")
+    else {"use_container_width": True}
 )
 
 
@@ -191,9 +197,9 @@ def render_executive_overview(events: pd.DataFrame) -> None:
     columns[3].metric("Regions Exposed", regions)
 
     left, middle, right = st.columns([1.45, 1, 1])
-    left.plotly_chart(weekly_event_volume_chart(events), use_container_width=True)
-    middle.plotly_chart(risk_level_mix_chart(events), use_container_width=True)
-    right.plotly_chart(region_exposure_chart(events), use_container_width=True)
+    left.plotly_chart(weekly_event_volume_chart(events), **STRETCH_WIDTH)
+    middle.plotly_chart(risk_level_mix_chart(events), **STRETCH_WIDTH)
+    right.plotly_chart(region_exposure_chart(events), **STRETCH_WIDTH)
 
     st.subheader("High-Risk Alerts")
     alerts = events[events["risk_level"].isin(["High", "Critical"])].head(8)
@@ -202,7 +208,6 @@ def render_executive_overview(events: pd.DataFrame) -> None:
     else:
         st.dataframe(
             format_event_table(alerts),
-            use_container_width=True,
             hide_index=True,
             column_config={
                 "Evidence": st.column_config.LinkColumn(
@@ -210,6 +215,7 @@ def render_executive_overview(events: pd.DataFrame) -> None:
                     display_text="Open source",
                 )
             },
+            **STRETCH_WIDTH,
         )
 
 
@@ -230,7 +236,6 @@ def render_event_feed(events: pd.DataFrame) -> None:
     st.caption(f"{len(feed)} events shown, newest and highest-risk events first.")
     st.dataframe(
         format_event_table(feed),
-        use_container_width=True,
         hide_index=True,
         column_config={
             "Evidence": st.column_config.LinkColumn(
@@ -238,6 +243,7 @@ def render_event_feed(events: pd.DataFrame) -> None:
                 display_text="Open source",
             )
         },
+        **STRETCH_WIDTH,
     )
 
     if not feed.empty:
@@ -309,7 +315,7 @@ def render_score_breakdown(events: pd.DataFrame) -> None:
 
     chart_column, explanation_column = st.columns([1.4, 1])
     chart_column.plotly_chart(
-        score_breakdown_chart(selected), use_container_width=True
+        score_breakdown_chart(selected), **STRETCH_WIDTH
     )
     with explanation_column:
         st.subheader(selected["event_title"])
@@ -346,8 +352,8 @@ def render_exposure(events: pd.DataFrame) -> None:
     )
 
     left, right = st.columns(2)
-    left.plotly_chart(region_exposure_chart(events), use_container_width=True)
-    right.plotly_chart(component_exposure_chart(events), use_container_width=True)
+    left.plotly_chart(region_exposure_chart(events), **STRETCH_WIDTH)
+    right.plotly_chart(component_exposure_chart(events), **STRETCH_WIDTH)
 
     summary = (
         events.groupby("region")
@@ -370,8 +376,8 @@ def render_exposure(events: pd.DataFrame) -> None:
                 "Critical_Events": "Critical Events",
             }
         ),
-        use_container_width=True,
         hide_index=True,
+        **STRETCH_WIDTH,
     )
 
 
