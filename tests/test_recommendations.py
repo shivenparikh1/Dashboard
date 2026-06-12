@@ -22,6 +22,12 @@ class RecommendationTests(unittest.TestCase):
         )
         self.assertIn("response room today", actions[2])
 
+    def test_axle_event_receives_driveline_specific_action(self):
+        actions = generate_recommendations(
+            "Labor", "Axles and Driveline", risk_level="Critical"
+        )
+        self.assertIn("driveline inventory", actions[1])
+
     def test_unknown_values_receive_fallback_actions(self):
         actions = generate_recommendations(
             "Other", "Custom Assembly", risk_level="Medium"

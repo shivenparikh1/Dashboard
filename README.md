@@ -1,101 +1,71 @@
 # Automotive Supply Chain Risk Intelligence Control Tower
 
-A portfolio-ready Streamlit dashboard that turns supply chain disruption signals
-into prioritized risks and practical response actions for automotive and complex
-assembly operations.
+A Streamlit dashboard that organizes public supply chain risk signals, applies a
+transparent scoring model, and recommends practical first actions for automotive
+and complex assembly operations.
 
-> All events, companies, and scenarios in this project are fictional. The data is
-> designed for demonstration and learning, not operational decision-making.
+> This is a student-built supply chain risk intelligence prototype. Real events
+> are manually reviewed and scored using a simplified risk model. The dashboard
+> is for learning and portfolio demonstration, not enterprise decision-making.
 
 ## Business Problem
 
-Automotive supply chains are exposed to semiconductor shortages, port delays,
-supplier financial stress, labor actions, quality escapes, cyber incidents,
-natural disasters, and regulatory changes. These events often arrive through
-different channels and are difficult to compare consistently.
+Automotive supply chains can be disrupted by supplier fires, labor actions,
+semiconductor constraints, logistics interruptions, quality recalls,
+cyberattacks, and regulatory changes. These signals arrive from different
+sources, use different language, and do not come with a common priority.
 
-This project demonstrates how a supply chain analyst could:
+This project demonstrates how a supply chain analyst could turn those signals
+into a repeatable review process:
 
-- Organize disruption signals in one event feed
-- Apply a transparent risk score
-- Identify the events that require immediate attention
-- Understand geographic and component exposure
-- Recommend a structured first response
+- Record the event and preserve its public source
+- Classify the affected region, component, and risk type
+- Score urgency and potential production impact
+- Separate routine monitoring from immediate escalation
+- Recommend a practical first response
+- Communicate assumptions and uncertainty clearly
 
-The goal is not to predict every disruption. It is to improve prioritization,
-communication, and response discipline.
-
-## What the Dashboard Shows
-
-### 1. Executive Overview
-
-Headline metrics summarize critical events, elevated risks, average risk score,
-and the number of exposed regions. Charts show event movement, risk mix, and
-regional concentration.
-
-### 2. Risk Event Feed
-
-A searchable event table provides the event date, risk type, geography,
-component, total score, and risk level, with a detailed summary for each event.
-
-### 3. High-Risk Alerts
-
-High and Critical events are separated for faster operational review.
-
-### 4. Risk Score Breakdown
-
-The five scoring factors are displayed for a selected event so the user can see
-why it received its final priority.
-
-### 5. Supplier/Region Exposure
-
-Regional and component views show where elevated risks are concentrated. The MVP
-does not include a supplier master, so component exposure is used as an explicit
-proxy for supplier exposure.
-
-### 6. Recommended Actions
-
-The app combines risk-type, component, and escalation rules to recommend a
-practical first set of mitigation actions.
-
-### 7. Methodology
-
-The dashboard explains the scoring formula, risk bands, recommendation logic,
-and current limitations.
-
-## Decision-Ready Portfolio Report
-
-The project also includes a static executive report for a recruiter or
-operations stakeholder:
-
-- [`reports/automotive_risk_portfolio_report.html`](reports/automotive_risk_portfolio_report.html)
-- Four supporting charts in `reports/assets/`
-- Reproducible generation logic in `reports/generate_portfolio_report.py`
-- Source and metric notes in `reports/source_notes.md`
-
-The report identifies the main regional and component concentrations, lists the
-Critical event queue, and recommends actions for the next 24 hours, 72 hours,
-and two weeks.
+The dashboard is designed as an analyst decision-support prototype, not as a
+prediction engine.
 
 ## Data Inputs
 
-The MVP reads `data/mock_events.csv`, which contains 30 realistic but fictional
-risk events.
+The primary file, `data/real_events.csv`, contains manually entered events from
+linked public sources such as government recall data, trade notices, news
+organizations, and automotive industry publications.
+
+The initial portfolio contains 23 Real events. A separate
+`data/simulated_events.csv` file contains three clearly labeled testing
+scenarios. Simulated events are excluded from the default dashboard view and can
+be enabled with the Data Type filter.
+
+The project does not automatically scrape websites, call external APIs, or
+claim that public reporting proves a company has direct supplier exposure.
+Source interpretation and scoring are performed manually.
 
 Each event includes:
 
-- Event date, title, summary, and source type
-- Region and country
-- Affected industry and component
-- Risk type
-- Five 1-to-5 factor ratings
+- Event identity, title, summary, and relevant dates
+- Source name and clickable source URL
+- Data Type: `Real` or `Simulated`
+- Region, country, industry, and affected component
+- Risk type and five factor ratings
+- Calculated total score and risk level
+- Reviewed action, confidence level, and last-reviewed date
 
-The current model is intentionally CSV-based. It has no external API or live
-data dependency.
+The complete CSV schema is:
+
+```text
+event_id, date, event_title, event_summary, source_name, source_url,
+data_type, source_date, region, country, affected_industry,
+affected_component, risk_type, severity, probability, time_sensitivity,
+substitution_difficulty, production_impact, total_risk_score, risk_level,
+recommended_action, confidence_level, last_reviewed
+```
 
 ## Scoring Model
 
-Each event receives five ratings:
+Each event receives five ratings from 1 to 5:
 
 ```text
 Total Risk Score =
@@ -106,16 +76,69 @@ Severity
 + Production Impact
 ```
 
-| Score | Risk level |
-|---|---|
-| 5-10 | Low |
-| 11-17 | Medium |
-| 18-22 | High |
-| 23-25 | Critical |
+| Score | Risk Level | Suggested Response |
+|---|---|---|
+| 5-10 | Low | Monitor |
+| 11-17 | Medium | Assign an owner and review |
+| 18-22 | High | Begin mitigation and monitor daily |
+| 23-25 | Critical | Escalate immediately |
 
-The model is deliberately transparent. A reviewer can trace every total score
-back to the five original ratings. More detail is available in
-[`docs/scoring_methodology.md`](docs/scoring_methodology.md).
+All five factors are equally weighted. The app validates that every stored total
+and risk level matches the documented model before displaying the data.
+
+See [docs/scoring_methodology.md](docs/scoring_methodology.md) for factor
+definitions, confidence labels, recommendation logic, and review controls.
+
+## Dashboard Features
+
+### Executive Overview
+
+Shows Critical events, High plus Critical events, average score, exposed
+regions, weekly event volume, risk mix, and regional concentration.
+
+### Risk Event Feed
+
+Provides a searchable event table with source links, Data Type, confidence,
+geography, component, score, and risk level.
+
+### High-Risk Alerts
+
+Separates events scoring 18 or higher for faster operational review.
+
+### Risk Score Breakdown
+
+Explains the five factor ratings behind a selected event and displays its source
+date, last review date, and confidence level.
+
+### Supplier/Region Exposure
+
+Shows regional and component concentrations. Because the MVP has no supplier
+master, component exposure is clearly labeled as a proxy for supplier exposure.
+
+### Recommended Actions
+
+Combines a manually reviewed event action with rule-based risk-type, component,
+and escalation actions.
+
+### Methodology
+
+Explains scoring, risk bands, Data Types, limitations, and the weekly manual
+update workflow.
+
+## Weekly Update Workflow
+
+The intended weekly analyst process is:
+
+1. Search for new events.
+2. Verify source credibility.
+3. Classify risk type.
+4. Score the five risk factors.
+5. Add recommended actions.
+6. Review for exaggeration or uncertainty.
+7. Update the CSV weekly.
+
+The workflow is intentionally manual for this MVP. It keeps source selection and
+analyst judgment visible and easy to explain during a portfolio review.
 
 ## Project Structure
 
@@ -123,14 +146,10 @@ back to the five original ratings. More detail is available in
 .
 ├── app.py
 ├── data/
-│   └── mock_events.csv
+│   ├── real_events.csv
+│   └── simulated_events.csv
 ├── docs/
 │   └── scoring_methodology.md
-├── reports/
-│   ├── assets/
-│   ├── automotive_risk_portfolio_report.html
-│   ├── generate_portfolio_report.py
-│   └── source_notes.md
 ├── src/
 │   ├── charts.py
 │   ├── classification.py
@@ -138,16 +157,18 @@ back to the five original ratings. More detail is available in
 │   ├── recommendations.py
 │   └── scoring.py
 ├── tests/
+│   ├── test_data_loader.py
+│   ├── test_deployment_imports.py
 │   ├── test_recommendations.py
 │   └── test_scoring.py
 ├── requirements.txt
+├── requirements-dev.txt
 └── README.md
 ```
 
 ## Run the Dashboard
 
-Python 3.9 or later is supported. For Streamlit Community Cloud, select Python
-3.12 in Advanced settings to match the platform default used for deployment.
+Python 3.9 or later is supported.
 
 ```bash
 python3 -m venv .venv
@@ -159,10 +180,10 @@ streamlit run app.py
 Open the local address shown by Streamlit, usually
 `http://localhost:8501`.
 
-When deploying to Streamlit Community Cloud, set the repository to
-`shivenparikh1/Dashboard`, the branch to `main`, and the entrypoint to `app.py`.
-The root `requirements.txt` selects compatible package versions for both the
-Cloud Python 3.14 runtime and local Python 3.9 environments.
+For Streamlit Community Cloud, use repository
+`shivenparikh1/Dashboard`, branch `main`, and entrypoint `app.py`. The root
+`requirements.txt` includes version markers for the local Python 3.9 environment
+and Streamlit Cloud's newer Python runtime.
 
 ## Run the Tests
 
@@ -172,51 +193,48 @@ pytest
 
 The tests cover:
 
-- Score calculation
-- Minimum and maximum scores
-- Every risk-level boundary
-- Invalid factor values
-- Risk-type recommendations
-- Component-specific recommendations
-- Critical-event escalation
-- Fallback recommendations
-
-## Regenerate the Portfolio Report
-
-```bash
-python reports/generate_portfolio_report.py
-```
-
-Open `reports/automotive_risk_portfolio_report.html` in a browser to review the
-finished report.
+- Score calculation and all risk-level boundaries
+- Invalid score inputs
+- Risk-type and component recommendation rules
+- Escalation and fallback recommendations
+- Required CSV fields and source links
+- Stored score reconciliation
+- Real and Simulated dataset separation
+- Dashboard startup imports
 
 ## Limitations
 
-- All data is fictional and manually scored.
-- The five risk factors are equally weighted.
-- Recommendations are rule-based rather than predictive.
-- The MVP has no supplier master, tier mapping, inventory coverage, cost impact,
-  vehicle program, plant, or revenue-at-risk data.
-- Events are not automatically deduplicated or linked to related disruptions.
-- There are no live alerts, workflow assignments, or external data feeds.
+- Real events are manually selected, summarized, classified, and scored.
+- Public reporting does not prove direct supplier, plant, inventory, cost, or
+  vehicle-program exposure.
+- Scores are analyst judgments, not statistical predictions.
+- Equal factor weighting may not match every company or commodity.
+- Confidence labels are qualitative and do not guarantee source accuracy.
+- Event status and related-event deduplication are not yet modeled.
+- The MVP has no supplier master, tier mapping, inventory days, revenue at risk,
+  action ownership, or workflow notifications.
+- There is no automatic scraping, API ingestion, or weekly scheduler.
 
 ## Future Improvements
 
-A production-oriented version could add:
+A later version could add:
 
-- Supplier, site, tier, and vehicle-program master data
-- Inventory days and time-to-production-impact
+- Supplier, site, tier, plant, and vehicle-program master data
+- Inventory coverage and time-to-production-impact
 - Revenue and production volume at risk
-- Live news, weather, logistics, and financial feeds
-- Source reliability and analyst confidence scores
-- Event deduplication and related-event clustering
-- Email or collaboration alerts with action ownership
-- Historical supplier performance and recovery tracking
+- Event status, duplicate detection, and related-event clustering
+- Source reliability scoring and a formal analyst approval workflow
 - Configurable scoring weights by commodity or program
+- Approved news, weather, logistics, financial, and regulatory feeds
+- Action owners, due dates, alerts, and recovery tracking
 
 ## Portfolio Value
 
-This project demonstrates the ability to translate a supply chain problem into a
-structured analytical product: define data inputs, create a transparent scoring
-model, prioritize operational risk, communicate exposure visually, recommend
-actions, test the decision logic, and document limitations honestly.
+For a supply chain internship recruiter, this project shows the ability to:
+
+- Translate an operational problem into a structured analytical product
+- Work with imperfect public information without overstating certainty
+- Build an auditable prioritization model
+- Connect risk signals to practical mitigation actions
+- Communicate exposure through an executive-friendly dashboard
+- Test decision logic and document limitations honestly

@@ -72,6 +72,10 @@ COMPONENT_ACTIONS = {
         "Check tooling mobility, alternate foundry capacity, and machining validation "
         "requirements for the affected casting."
     ),
+    "Axles and Driveline": (
+        "Confirm axle and driveline inventory by plant, alternate capacity, tooling "
+        "constraints, and vehicle build-sequencing options."
+    ),
     "Steel": (
         "Confirm grade-level inventory and evaluate qualified mills or approved "
         "material substitutions."

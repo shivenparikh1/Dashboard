@@ -1,5 +1,6 @@
 """Streamlit entry point for the Automotive Supply Chain Risk Control Tower."""
 
+from html import escape
 from pathlib import Path
 from typing import List
 
@@ -13,13 +14,23 @@ from src.charts import (
     score_breakdown_chart,
     weekly_event_volume_chart,
 )
-from src.data_loader import load_events
+from src.data_loader import load_event_files
 
 
 APP_TITLE = "Automotive Supply Chain Risk Intelligence Control Tower"
-APP_BUILD = "2026.06.12.2"
-DATA_PATH = Path(__file__).parent / "data" / "mock_events.csv"
+APP_BUILD = "2026.06.12.5"
+DATA_PATHS = [
+    Path(__file__).parent / "data" / "real_events.csv",
+    Path(__file__).parent / "data" / "simulated_events.csv",
+]
 RISK_LEVELS = ["Critical", "High", "Medium", "Low"]
+DATA_TYPES = ["Real", "Simulated"]
+DISCLAIMER = (
+    "This is a student-built supply chain risk intelligence prototype. "
+    "Real events are manually reviewed and scored using a simplified risk model. "
+    "The dashboard is for learning and portfolio demonstration, not enterprise "
+    "decision-making."
+)
 
 
 st.set_page_config(
@@ -75,14 +86,15 @@ st.markdown(
 
 @st.cache_data
 def get_events() -> pd.DataFrame:
-    """Read and enrich the local mock event data."""
-    return load_events(DATA_PATH)
+    """Read the manually reviewed Real data and optional Simulated test data."""
+    return load_event_files(DATA_PATHS)
 
 
 def filter_events(
     events: pd.DataFrame,
     start_date,
     end_date,
+    data_types: List[str],
     levels: List[str],
     regions: List[str],
     risk_types: List[str],
@@ -91,6 +103,7 @@ def filter_events(
     """Apply dashboard-wide filters."""
     filtered = events[
         events["date"].dt.date.between(start_date, end_date)
+        & events["data_type"].isin(data_types)
         & events["risk_level"].isin(levels)
         & events["region"].isin(regions)
         & events["risk_type"].isin(risk_types)
@@ -112,6 +125,10 @@ def format_event_table(events: pd.DataFrame) -> pd.DataFrame:
             "region",
             "country",
             "affected_component",
+            "data_type",
+            "confidence_level",
+            "source_name",
+            "source_url",
         ]
     ].copy()
     table["date"] = table["date"].dt.strftime("%Y-%m-%d")
@@ -126,6 +143,10 @@ def format_event_table(events: pd.DataFrame) -> pd.DataFrame:
             "region": "Region",
             "country": "Country",
             "affected_component": "Component",
+            "data_type": "Data Type",
+            "confidence_level": "Confidence",
+            "source_name": "Source",
+            "source_url": "Evidence",
         }
     )
 
@@ -153,6 +174,7 @@ def render_header(section_name: str) -> None:
     """Render a consistent page header."""
     st.title(APP_TITLE)
     st.header(section_name)
+    st.info(DISCLAIMER)
 
 
 def render_executive_overview(events: pd.DataFrame) -> None:
@@ -182,6 +204,12 @@ def render_executive_overview(events: pd.DataFrame) -> None:
             format_event_table(alerts),
             use_container_width=True,
             hide_index=True,
+            column_config={
+                "Evidence": st.column_config.LinkColumn(
+                    "Evidence",
+                    display_text="Open source",
+                )
+            },
         )
 
 
@@ -204,6 +232,12 @@ def render_event_feed(events: pd.DataFrame) -> None:
         format_event_table(feed),
         use_container_width=True,
         hide_index=True,
+        column_config={
+            "Evidence": st.column_config.LinkColumn(
+                "Evidence",
+                display_text="Open source",
+            )
+        },
     )
 
     if not feed.empty:
@@ -212,10 +246,14 @@ def render_event_feed(events: pd.DataFrame) -> None:
         st.markdown(f"**{selected['event_title']}**")
         st.write(selected["event_summary"])
         st.caption(
-            f"Source type: {selected['source_type']} | "
+            f"Source: {selected['source_name']} | "
+            f"Data type: {selected['data_type']} | "
+            f"Confidence: {selected['confidence_level']} | "
             f"Industry: {selected['affected_industry']} | "
             f"Country: {selected['country']}"
         )
+        if selected["source_url"]:
+            st.link_button("Open source evidence", selected["source_url"])
 
 
 def render_high_risk_alerts(events: pd.DataFrame) -> None:
@@ -229,13 +267,31 @@ def render_high_risk_alerts(events: pd.DataFrame) -> None:
         "Events scoring 18 or higher are shown here for operational escalation."
     )
     for _, event in alerts.iterrows():
+        level = escape(str(event["risk_level"]))
+        title = escape(str(event["event_title"]))
+        country = escape(str(event["country"]))
+        component = escape(str(event["affected_component"]))
+        risk_type = escape(str(event["risk_type"]))
+        summary = escape(str(event["event_summary"]))
+        source_name = escape(str(event["source_name"]))
+        source_url = escape(str(event["source_url"]), quote=True)
+        data_type = escape(str(event["data_type"]))
+        confidence = escape(str(event["confidence_level"]))
+        source_line = (
+            f'<a href="{source_url}" target="_blank" rel="noopener noreferrer">'
+            f"Source: {source_name}</a>"
+            if source_url
+            else f"Source: {source_name}"
+        )
         st.markdown(
             f"""
             <div class="alert-card">
-                <strong>{event['risk_level']} · {event['total_risk_score']}/25</strong><br>
-                <strong>{event['event_title']}</strong><br>
-                {event['country']} · {event['affected_component']} · {event['risk_type']}<br>
-                <span class="small-note">{event['event_summary']}</span>
+                <strong>{level} · {event['total_risk_score']}/25</strong><br>
+                <strong>{title}</strong><br>
+                {country} · {component} · {risk_type} · {data_type}<br>
+                <span class="small-note">{summary}</span><br>
+                <span class="small-note">Confidence: {confidence}</span><br>
+                {source_line}
             </div>
             """,
             unsafe_allow_html=True,
@@ -258,6 +314,14 @@ def render_score_breakdown(events: pd.DataFrame) -> None:
     with explanation_column:
         st.subheader(selected["event_title"])
         st.write(selected["event_summary"])
+        st.caption(
+            f"Source: {selected['source_name']} | "
+            f"Source date: {selected['source_date']:%Y-%m-%d} | "
+            f"Last reviewed: {selected['last_reviewed']:%Y-%m-%d} | "
+            f"Confidence: {selected['confidence_level']}"
+        )
+        if selected["source_url"]:
+            st.link_button("Open source evidence", selected["source_url"])
         st.markdown(
             f"""
             <div class="method-box">
@@ -321,13 +385,26 @@ def render_recommended_actions(events: pd.DataFrame) -> None:
         f"{selected['country']} · {selected['affected_component']}"
     )
     st.write(selected["event_summary"])
+    if selected["source_url"]:
+        st.link_button("Open source evidence", selected["source_url"])
 
+    action_labels = [
+        "Reviewed event action",
+        "Risk-type action",
+        "Component action",
+        "Escalation action",
+    ]
     for number, action in enumerate(selected["recommended_actions"], start=1):
+        label = (
+            action_labels[number - 1]
+            if number <= len(action_labels)
+            else f"Action {number}"
+        )
         st.markdown(
             f"""
             <div class="action-card">
-                <strong>Action {number}</strong><br>
-                {action}
+                <strong>{escape(label)}</strong><br>
+                {escape(str(action))}
             </div>
             """,
             unsafe_allow_html=True,
@@ -384,11 +461,32 @@ def render_methodology() -> None:
         "the calculated risk level."
     )
 
-    st.subheader("MVP Limitations")
+    st.subheader("Weekly Update Workflow")
+    st.markdown(
+        """
+        1. Search for new events.
+        2. Verify source credibility.
+        3. Classify risk type.
+        4. Score the five risk factors.
+        5. Add recommended actions.
+        6. Review for exaggeration or uncertainty.
+        7. Update the CSV weekly.
+        """
+    )
+
+    st.subheader("Data Types")
     st.write(
-        "All records are fictional. Scores are equal-weighted expert judgments, "
-        "recommendations are deterministic rules, and the MVP has no live feeds, "
-        "supplier master, inventory positions, cost exposure, or alert workflow."
+        "**Real** events are manually entered from linked public sources. "
+        "**Simulated** events are a small testing-only dataset used to demonstrate "
+        "edge cases and dashboard behavior."
+    )
+
+    st.subheader("Prototype Limitations")
+    st.write(
+        "Real events are manually reviewed rather than automatically scraped. "
+        "Scores are simplified analyst judgments, and public reporting does not "
+        "establish a company's actual supplier, inventory, cost, or vehicle-program "
+        "exposure. Source links and confidence labels should be reviewed before use."
     )
 
 
@@ -414,6 +512,11 @@ with st.sidebar:
     )
     st.divider()
     st.markdown("### Filters")
+    selected_data_types = st.multiselect(
+        "Data Type",
+        DATA_TYPES,
+        default=["Real"],
+    )
     date_range = st.date_input(
         "Event date range",
         value=(all_events["date"].min().date(), all_events["date"].max().date()),
@@ -439,8 +542,8 @@ with st.sidebar:
         default=sorted(all_events["affected_component"].unique()),
     )
     st.divider()
-    st.caption("Data source: data/mock_events.csv")
-    st.caption("All events and organizations are fictional.")
+    st.caption("Primary data: manually reviewed public-source events")
+    st.caption("Optional data: simulated testing scenarios")
     st.caption(f"Build: {APP_BUILD}")
 
 if isinstance(date_range, tuple) and len(date_range) == 2:
@@ -452,6 +555,7 @@ filtered_events = filter_events(
     all_events,
     start_date,
     end_date,
+    selected_data_types,
     selected_levels,
     selected_regions,
     selected_risk_types,
