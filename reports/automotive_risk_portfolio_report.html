@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Automotive Supply Chain Risk Portfolio Report</title>
+  <style>
+    :root {
+      --canvas: #F7F4EF;
+      --paper: #FFFFFF;
+      --ink: #17212B;
+      --muted: #5F6B76;
+      --line: #DDE3E8;
+      --blue: #2F6690;
+      --teal: #3A7D78;
+      --amber: #D99A2B;
+      --red: #B5413C;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+    }
+    main { max-width: 1040px; margin: 0 auto; padding: 56px 24px 88px; }
+    header, section { margin-bottom: 44px; }
+    h1 { max-width: 900px; margin: 0 0 14px; font-size: clamp(2.35rem, 6vw, 4.6rem);
+      letter-spacing: -0.055em; line-height: 0.98; }
+    h2 { margin: 0 0 14px; font-size: 1.75rem; letter-spacing: -0.025em; }
+    h3 { margin: 30px 0 10px; font-size: 1.18rem; }
+    p, li { line-height: 1.68; }
+    .eyebrow { color: var(--red); font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; font-size: 0.77rem; }
+    .dek { max-width: 760px; color: var(--muted); font-size: 1.14rem; }
+    .small { color: var(--muted); font-size: 0.82rem; }
+    .executive-summary-box {
+      padding: 26px 30px;
+      background: linear-gradient(145deg, #fff 0%, #f1ece4 100%);
+      border: 1px solid #ded6cb;
+      border-radius: 20px;
+      box-shadow: 0 18px 38px rgba(23, 33, 43, 0.07);
+    }
+    .executive-summary-box ul { margin: 0; padding-left: 22px; }
+    .executive-summary-box li + li { margin-top: 12px; }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .metric-card { padding: 19px; background: var(--paper); border: 1px solid var(--line);
+      border-radius: 16px; }
+    .metric-label { color: var(--muted); font-size: 0.79rem; font-weight: 750;
+      text-transform: uppercase; letter-spacing: 0.07em; }
+    .metric-value { margin: 8px 0 5px; font-size: 1.8rem; font-weight: 850;
+      letter-spacing: -0.04em; }
+    .metric-detail { color: var(--muted); font-size: 0.82rem; line-height: 1.35; }
+    .finding { padding-top: 10px; }
+    figure { margin: 22px 0 12px; }
+    figure img { display: block; width: 100%; border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(23, 33, 43, 0.08); }
+    figcaption { margin-top: 9px; color: var(--muted); font-size: 0.82rem; }
+    .callout { padding: 20px 22px; background: #eee8df; border-left: 5px solid var(--amber);
+      border-radius: 14px; }
+    .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .action { padding: 21px; background: var(--paper); border: 1px solid var(--line);
+      border-radius: 16px; }
+    .action-number { color: var(--red); font-weight: 850; font-size: 0.78rem;
+      letter-spacing: 0.08em; }
+    .action h3 { margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper);
+      border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+    th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid var(--line);
+      vertical-align: top; font-size: 0.9rem; }
+    th { color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em;
+      font-size: 0.72rem; }
+    tr:last-child td { border-bottom: 0; }
+    .score { display: inline-flex; min-width: 38px; justify-content: center; padding: 5px 8px;
+      border-radius: 999px; color: #fff; font-weight: 850; }
+    .critical { background: var(--red); }
+    .questions li + li { margin-top: 8px; }
+    footer { padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted);
+      font-size: 0.82rem; }
+    a { color: var(--blue); }
+    @media (max-width: 800px) {
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .actions { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+      main { padding-top: 34px; }
+    }
+    @media print {
+      body { background: #fff; }
+      main { max-width: none; padding: 18px; }
+      figure img, .executive-summary-box { box-shadow: none; }
+      section, figure { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main data-report-audience="automotive supply chain and operations stakeholders">
+    <header data-contract-section="title">
+      <div class="eyebrow">Decision-ready portfolio review</div>
+      <h1>Where automotive operations should focus next</h1>
+      <p class="dek">A prioritized view of the fictional supply chain risk portfolio in
+      the Automotive Supply Chain Risk Intelligence Control Tower. Generated
+      June 12, 2026 from 30 mock events dated January 8 through June 10, 2026.</p>
+    </header>
+
+    <section class="executive-summary-box" data-contract-section="executive-summary">
+      <h2>Executive Summary</h2>
+      <ul>
+        <li><strong>The portfolio requires active intervention:</strong>
+        23 of 30 events (77%) are High or
+        Critical, including 7 events requiring immediate escalation.</li>
+        <li><strong>The alert workload is geographically concentrated:</strong>
+        East Asia and Europe each carry seven elevated events, together representing
+        14 of 23 alerts (61%).</li>
+        <li><strong>The most acute bottlenecks are hard to substitute:</strong>
+        semiconductor and rare-earth magnet events account for
+        4 of 7 Critical events, while every
+        Critical event averages 5.0 for both substitution difficulty and production
+        impact.</li>
+      </ul>
+      <div class="metric-grid"><div class="metric-card"><div class="metric-label">Elevated events</div><div class="metric-value">23 / 30</div><div class="metric-detail">77% are High or Critical</div></div><div class="metric-card"><div class="metric-label">Critical events</div><div class="metric-value">7</div><div class="metric-detail">Immediate cross-functional escalation</div></div><div class="metric-card"><div class="metric-label">Average score</div><div class="metric-value">19.4 / 25</div><div class="metric-detail">Portfolio-wide unweighted average</div></div><div class="metric-card"><div class="metric-label">Exposed regions</div><div class="metric-value">9</div><div class="metric-detail">Across the full fictional portfolio</div></div></div>
+    </section>
+
+    <section data-contract-section="key-findings">
+      <h2>Key Findings</h2>
+
+      <div class="finding">
+        <h3>1. Elevated risk is the portfolio norm, not the exception</h3>
+        <p>High and Critical events make up 77% of the current event
+        set. That means the operating challenge is not simply identifying alerts; it is
+        imposing a consistent triage cadence so the seven Critical events receive
+        immediate attention without allowing the 16 High events to age unnoticed.</p>
+        <figure>
+          <img src="assets/risk_level_mix.png" alt="Risk level mix chart">
+          <figcaption>Risk bands follow the documented 5-to-25 additive scoring model.</figcaption>
+        </figure>
+        <p>The average score is 19.4, already inside
+        the High band. A daily review should therefore manage a queue of exposure,
+        ownership, and recovery milestones rather than treat each alert as a standalone
+        exception.</p>
+      </div>
+
+      <div class="finding">
+        <h3>2. East Asia and Europe should have dedicated response workstreams</h3>
+        <p>East Asia and Europe each contribute seven elevated events. North America is
+        the next-largest cluster with five, while the remaining regions account for
+        four elevated events combined.</p>
+        <figure>
+          <img src="assets/elevated_by_region.png" alt="Elevated events by region chart">
+          <figcaption>Regional exposure counts High and Critical events only.</figcaption>
+        </figure>
+        <p>The geographic pattern supports separate workstreams: one focused on East
+        Asian electronics, magnets, and trade exposure; another on European industrial
+        capacity, quality, and labor continuity. Regional count alone does not estimate
+        production loss, so these workstreams still need plant and inventory context.</p>
+      </div>
+
+      <div class="finding">
+        <h3>3. Broad component exposure and acute bottlenecks are different problems</h3>
+        <p>Steel has the highest cumulative score because it appears in three events, but
+        none is Critical. Semiconductors and rare-earth magnets each have two Critical
+        events, signaling a sharper short-term continuity risk despite fewer total
+        records.</p>
+        <figure>
+          <img src="assets/component_exposure.png" alt="Component risk exposure chart">
+          <figcaption>Cumulative score is a component exposure proxy, not supplier or
+          revenue exposure.</figcaption>
+        </figure>
+        <p>Operations should keep steel in the broader monitoring queue while assigning
+        immediate engineering and sourcing actions to semiconductors, magnets, electric
+        motors, aluminum castings, and brake systems, which contain the current Critical
+        events.</p>
+      </div>
+
+      <div class="finding">
+        <h3>4. Critical risk is driven by constrained alternatives and direct output impact</h3>
+        <p>Across Critical events, substitution difficulty and production impact both
+        average the maximum 5.0 rating. Time sensitivity averages
+        4.86, reinforcing that these are near-term
+        continuity decisions rather than ordinary supplier-performance issues.</p>
+        <figure>
+          <img src="assets/critical_factor_profile.png" alt="Risk factor comparison chart">
+          <figcaption>Factor averages use the original analyst-entered 1-to-5 ratings.</figcaption>
+        </figure>
+        <p>The response should pair commercial escalation with engineering validation.
+        Capacity reservations alone will not resolve a part that cannot be substituted
+        or qualified inside the disruption window.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Critical Event Queue</h2>
+      <p>These seven events should be reviewed first, ordered by total score and then
+      event date. The project recommendation engine assigns each one same-day
+      cross-functional escalation.</p>
+      <table>
+        <thead><tr><th>Event</th><th>Signal</th><th>Location</th><th>Exposure</th><th>Score</th></tr></thead>
+        <tbody><tr><td><strong>EVT-017</strong><br><span class="small">Apr 18, 2026</span></td><td>Fictional semiconductor allocation cut</td><td>East Asia / Malaysia</td><td>Semiconductors<br><span class="small">Capacity</span></td><td><span class="score critical">25</span></td></tr><tr><td><strong>EVT-024</strong><br><span class="small">May 20, 2026</span></td><td>Fictional casting tool failure</td><td>Europe / Italy</td><td>Aluminum Castings<br><span class="small">Capacity</span></td><td><span class="score critical">24</span></td></tr><tr><td><strong>EVT-001</strong><br><span class="small">Jan 08, 2026</span></td><td>Fictional chip fab utility interruption</td><td>East Asia / Taiwan</td><td>Semiconductors<br><span class="small">Capacity</span></td><td><span class="score critical">24</span></td></tr><tr><td><strong>EVT-028</strong><br><span class="small">Jun 05, 2026</span></td><td>Fictional motor plant strike vote</td><td>Europe / Germany</td><td>Electric Motors<br><span class="small">Labor</span></td><td><span class="score critical">23</span></td></tr><tr><td><strong>EVT-022</strong><br><span class="small">May 11, 2026</span></td><td>Fictional magnet supplier cyber event</td><td>East Asia / China</td><td>Rare Earth Magnets<br><span class="small">Cybersecurity</span></td><td><span class="score critical">23</span></td></tr><tr><td><strong>EVT-009</strong><br><span class="small">Mar 07, 2026</span></td><td>Fictional brake valve contamination</td><td>Europe / Germany</td><td>Brake Systems<br><span class="small">Quality</span></td><td><span class="score critical">23</span></td></tr><tr><td><strong>EVT-006</strong><br><span class="small">Feb 16, 2026</span></td><td>Fictional rare-earth export review</td><td>East Asia / China</td><td>Rare Earth Magnets<br><span class="small">Geopolitical</span></td><td><span class="score critical">23</span></td></tr></tbody>
+      </table>
+    </section>
+
+    <section data-contract-section="recommended-next-steps">
+      <h2>Recommended Next Steps</h2>
+      <div class="actions">
+        <div class="action">
+          <div class="action-number">0-24 HOURS</div>
+          <h3>Open one Critical-event response room</h3>
+          <p>Assign an executive owner and functional lead to each of the seven Critical
+          events. Record inventory coverage, next production impact, supplier recovery
+          date, and the next irreversible decision.</p>
+        </div>
+        <div class="action">
+          <div class="action-number">24-72 HOURS</div>
+          <h3>Run regional and component mitigation tracks</h3>
+          <p>Separate East Asia and Europe workstreams. Prioritize semiconductor
+          allocation, rare-earth magnet alternatives, motor continuity, casting tooling,
+          and brake-system containment using the rule-based action library.</p>
+        </div>
+        <div class="action">
+          <div class="action-number">NEXT 2 WEEKS</div>
+          <h3>Add operational exposure data</h3>
+          <p>Link events to suppliers, sites, part numbers, plants, vehicle programs,
+          inventory days, and production volume. These fields are necessary to convert
+          event priority into units or revenue at risk.</p>
+        </div>
+      </div>
+    </section>
+
+    <section data-contract-section="further-questions">
+      <h2>Further Questions</h2>
+      <ul class="questions">
+        <li>Which Critical events have less inventory coverage than the credible supplier
+        recovery time?</li>
+        <li>Do the semiconductor and magnet events affect the same vehicle programs,
+        creating correlated exposure?</li>
+        <li>Which alternate parts or suppliers are already approved, and which require
+        engineering validation or homologation?</li>
+        <li>Should factor weights differ for safety-critical components, launch programs,
+        or single-source suppliers?</li>
+      </ul>
+    </section>
+
+    <section data-contract-section="caveats-and-assumptions">
+      <h2>Caveats and Assumptions</h2>
+      <div class="callout">
+        <p><strong>This is a fictional portfolio demonstration, not live operational
+        intelligence.</strong> Ratings are manual and equally weighted. Events are
+        evaluated independently, and the data has no supplier master, tier, plant,
+        inventory, cost, recovery-time, vehicle-program, or revenue fields. Component
+        cumulative score is therefore a prioritization proxy, not a forecast of business
+        impact.</p>
+      </div>
+    </section>
+
+    <footer>
+      <p>Prepared from <code>data/mock_events.csv</code> using
+      <code>src/data_loader.py</code>, <code>src/scoring.py</code>,
+      <code>src/classification.py</code>, and <code>src/recommendations.py</code>.
+      Audit notes are documented in <a href="source_notes.md">source_notes.md</a>.</p>
+    </footer>
+  </main>
+</body>
+</html>
