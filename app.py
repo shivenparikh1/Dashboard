@@ -17,6 +17,7 @@ from src.data_loader import load_events
 
 
 APP_TITLE = "Automotive Supply Chain Risk Intelligence Control Tower"
+APP_BUILD = "2026.06.12.1"
 DATA_PATH = Path(__file__).parent / "data" / "mock_events.csv"
 RISK_LEVELS = ["Critical", "High", "Medium", "Low"]
 
@@ -440,6 +441,7 @@ with st.sidebar:
     st.divider()
     st.caption("Data source: data/mock_events.csv")
     st.caption("All events and organizations are fictional.")
+    st.caption(f"Build: {APP_BUILD}")
 
 if isinstance(date_range, tuple) and len(date_range) == 2:
     start_date, end_date = date_range
